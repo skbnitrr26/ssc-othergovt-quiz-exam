@@ -1,0 +1,31 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python environment
+.env
+env/
+venv/
+ENV/
+env.bak/
+
+# Streamlit local config
+.streamlit/
+
+# Results folder (no need to push)
+results/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks checkpoints (optional, if any)
+.ipynb_checkpoints/
