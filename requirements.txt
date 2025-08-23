@@ -6,7 +6,7 @@ pandas==2.0.3
 matplotlib==3.7.2
 
 # PDF generation
-reportlab==3.6.12
+reportlab>=3.6.0
 
 # Environment variables
 python-dotenv==1.0.1
@@ -15,5 +15,5 @@ python-dotenv==1.0.1
 pydantic==2.5.1
 
 # LangChain
-langchain==0.1.105
-langchain-groq==0.0.4
+langchain>=0.1.105
+langchain-groq>=0.0.4
