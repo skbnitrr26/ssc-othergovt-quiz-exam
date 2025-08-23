@@ -199,10 +199,10 @@ def main():
             position: fixed;
             left: 20px;
             bottom: 10px;
-            color: #888;
+            color: ##000000;
             font-size: 14px;
         ">
-            👨‍💻 Made by <a href="https://www.linkedin.com/in/sumit-kumar-476792290" target="_blank" style="text-decoration:none; color:#888;">
+            👨‍💻 Made by <a href="https://www.linkedin.com/in/sumit-kumar-476792290" target="_blank" style="text-decoration:none; color:##000000;">
             <b>सuमि𝓉</b></a>
         </div>
         """,
