@@ -2,14 +2,12 @@
 
 import streamlit as st
 import pandas as pd
-import random
 import os
 from utils import QuestionGenerator
 import matplotlib.pyplot as plt
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
-import re
 
 class QuizManager:
     def __init__(self):
@@ -56,13 +54,6 @@ class QuizManager:
 
     def evaluate_quiz(self):
         self.results = []
-
-        def extract_numeric(ans):
-            if not ans:
-                return ""
-            match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", str(ans))
-            return match.group(0) if match else ans
-
         for i, (q, user_ans) in enumerate(zip(self.questions, self.user_answers)):
             result_dict = {
                 'question_number': i + 1,
@@ -70,18 +61,14 @@ class QuizManager:
                 'question_type': q['type'],
                 'user_answer': user_ans,
                 'correct_answer': q['correct_answer'],
-                'is_correct': False,
-                'user_answer_clean': extract_numeric(user_ans),
-                'correct_answer_clean': extract_numeric(q['correct_answer'])
+                'is_correct': False
             }
-
             if q['type'] == 'MCQ':
                 result_dict['options'] = q['options']
                 result_dict['is_correct'] = user_ans == q['correct_answer']
             else:
                 result_dict['options'] = []
-                result_dict['is_correct'] = str(result_dict['user_answer_clean']).strip() == str(result_dict['correct_answer_clean']).strip()
-
+                result_dict['is_correct'] = user_ans.strip().lower() == q['correct_answer'].strip().lower()
             self.results.append(result_dict)
 
     def generate_result_dataframe(self):
@@ -115,9 +102,9 @@ class QuizManager:
             c.setFont("Helvetica", 12)
             c.drawString(50, y, f"Q{row['question_number']}: {row['question']}")
             y -= 20
-            c.drawString(60, y, f"Your Answer: {row.get('user_answer_clean', row['user_answer'])}")
+            c.drawString(60, y, f"Your Answer: {row['user_answer']}")
             y -= 20
-            c.drawString(60, y, f"Correct Answer: {row.get('correct_answer_clean', row['correct_answer'])}")
+            c.drawString(60, y, f"Correct Answer: {row['correct_answer']}")
             y -= 30
             if y < 100:
                 c.showPage()
@@ -152,7 +139,6 @@ def main():
         st.session_state.quiz_generated = st.session_state.quiz_manager.generate_questions(
             generator, topic, question_type, difficulty, num_questions
         )
-        st.rerun()
 
     # Quiz Display
     if st.session_state.quiz_generated and st.session_state.quiz_manager.questions:
@@ -160,7 +146,6 @@ def main():
         if st.button("✅ Submit Quiz"):
             st.session_state.quiz_manager.evaluate_quiz()
             st.session_state.quiz_submitted = True
-            st.rerun()
 
     # Results Display
     if st.session_state.quiz_submitted:
@@ -171,8 +156,10 @@ def main():
             total = len(results_df)
             score_pct = (correct / total) * 100
 
+            # Score metric
             st.metric("Your Score", f"{correct}/{total}", f"{score_pct:.1f}%")
 
+            # Pie chart
             fig, ax = plt.subplots()
             ax.pie(
                 [correct, total - correct],
@@ -183,17 +170,17 @@ def main():
             )
             st.pyplot(fig)
 
+            # Detailed results
             for _, row in results_df.iterrows():
                 with st.expander(f"Question {row['question_number']}"):
-                    user_ans = row.get('user_answer_clean', row['user_answer'])
-                    correct_ans = row.get('correct_answer_clean', row['correct_answer'])
                     st.write(f"**Q: {row['question']}**")
                     if row['is_correct']:
-                        st.success(f"✅ Correct! Your answer: {user_ans}")
+                        st.success(f"✅ Correct! Your answer: {row['user_answer']}")
                     else:
-                        st.error(f"❌ Wrong. Your answer: {user_ans}")
-                        st.info(f"✅ Correct Answer: {correct_ans}")
+                        st.error(f"❌ Wrong. Your answer: {row['user_answer']}")
+                        st.info(f"✅ Correct Answer: {row['correct_answer']}")
 
+            # Save + Download CSV & PDF
             col1, col2 = st.columns(2)
             with col1:
                 path = st.session_state.quiz_manager.save_to_csv()
@@ -205,11 +192,12 @@ def main():
                 if pdf_buffer:
                     st.download_button("⬇️ Download PDF", pdf_buffer, file_name="quiz_results.pdf", mime="application/pdf")
 
+    # Custom footer
     st.markdown(
         """
         <div style="
             position: fixed;
-            right: 20px;
+            left: 20px;
             bottom: 10px;
             color: #888;
             font-size: 14px;
