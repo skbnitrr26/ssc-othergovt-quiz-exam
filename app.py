@@ -194,19 +194,21 @@ def main():
 
     # Custom footer
     st.markdown(
-        """
-        <div style="
-            position: fixed;
-            left: 20px;
-            bottom: 10px;
-            color: ##000000;
-            font-size: 14px;
-        ">
-            👨‍💻 Made by <a href="https://www.linkedin.com/in/sumit-kumar-476792290" target="_blank" style="text-decoration:none; color:##000000;">
-            <b>सuमि𝓉</b></a>
-        </div>
-        """,
-        unsafe_allow_html=True
+    """
+    <div style="
+        position: fixed;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        color: #000000;
+        font-size: 14px;
+        z-index: 999;
+    ">
+        👨‍💻 Made by <a href="https://www.linkedin.com/in/sumit-kumar-476792290" target="_blank" style="text-decoration:none; color:#000000;">
+        <b>सuमि𝓉</b></a>
+    </div>
+    """,
+    unsafe_allow_html=True
     )
 
 if __name__ == "__main__":
